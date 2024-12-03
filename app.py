@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template_string, request
 from werkzeug.utils import secure_filename
 from pathlib import Path
 import sqlite3
@@ -40,6 +40,59 @@ def get_price_and_photo(numero_commande):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # HTML sous forme de string
+    index_html = """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Recherche de Commande</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="text-center">Rechercher une Commande</h1>
+            
+            <!-- Formulaire pour rechercher une commande et télécharger une photo -->
+            <form method="POST" action="/" enctype="multipart/form-data" class="mt-4">
+                <div class="mb-3">
+                    <label for="numero_commande" class="form-label">Numéro de Commande :</label>
+                    <input type="text" id="numero_commande" name="numero_commande" class="form-control" placeholder="Entrez le numéro de commande" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="photo" class="form-label">Téléchargez une Photo :</label>
+                    <input type="file" id="photo" name="photo" class="form-control">
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+            </form>
+            
+            <hr>
+
+            <!-- Affichage du résultat -->
+            {% if price is not none %}
+                <div class="alert alert-success mt-4 text-center">
+                    Prix Total Après Remise : <strong>{{ price }} €</strong>
+                </div>
+                {% if photo_path %}
+                    <div class="text-center mt-4">
+                        <img src="{{ url_for('static', filename='uploads/' + photo_path.split('/')[-1]) }}" alt="Photo de la commande" class="img-fluid rounded shadow">
+                    </div>
+                {% endif %}
+            {% elif error %}
+                <div class="alert alert-danger mt-4 text-center">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    """
+    
     if request.method == "POST":
         numero_commande = request.form.get("numero_commande")
         photo = request.files.get("photo")
@@ -63,17 +116,17 @@ def index():
                 conn.close()
             except Exception as e:
                 print("Erreur lors de l'enregistrement de la photo :", e)
-                return render_template("index.html", price=None, error="Erreur lors de l'enregistrement de la photo.", photo_path=None)
+                return render_template_string(index_html, price=None, error="Erreur lors de l'enregistrement de la photo.", photo_path=None)
 
         # Récupérer le prix et la photo de la commande
         price, photo_path = get_price_and_photo(numero_commande)
 
         if price is not None:
-            return render_template("index.html", price=price, error=None, photo_path=photo_path)
+            return render_template_string(index_html, price=price, error=None, photo_path=photo_path)
         else:
-            return render_template("index.html", price=None, error="Commande non trouvée.", photo_path=None)
+            return render_template_string(index_html, price=None, error="Commande non trouvée.", photo_path=None)
 
-    return render_template("index.html", price=None, error=None, photo_path=None)
+    return render_template_string(index_html, price=None, error=None, photo_path=None)
 
 if __name__ == "__main__":
     app.run(debug=True)
