@@ -7,9 +7,13 @@ charset-normalizer==3.3.2
 click==8.1.7
 contourpy==1.2.1
 cycler==0.12.1
+distlib==0.3.9
+filelock==3.16.1
 Flask==3.0.2
 fonttools==4.53.1
+Frozen-Flask @ git+https://github.com/Frozen-Flask/Frozen-Flask.git@1e89b52cca1b6739564861650930f41f5ffa28dc
 frozendict==2.4.4
+gunicorn==23.0.0
 html5lib==1.1
 idna==3.7
 importlib_metadata==8.4.0
@@ -33,6 +37,7 @@ pandas==2.2.2
 pandas-ta==0.3.14b0
 peewee==3.17.6
 pillow==10.4.0
+pipenv==2024.4.0
 platformdirs==4.2.2
 plotly==5.23.0
 pyicloud==1.0.0
@@ -48,6 +53,7 @@ typing_extensions==4.12.2
 tzdata==2024.1
 tzlocal==5.2
 urllib3==2.2.2
+virtualenv==20.28.0
 webencodings==0.5.1
 Werkzeug==3.0.1
 XlsxWriter==3.2.0
